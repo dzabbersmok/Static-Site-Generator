@@ -47,3 +47,5 @@ Note: - Item 1 and * Item 1 both work in markdown
 ```
 This is code
 ```
+
+chmod +x test.sh
