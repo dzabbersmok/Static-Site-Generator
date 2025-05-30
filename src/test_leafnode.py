@@ -16,9 +16,5 @@ class TestLeafNode(unittest.TestCase):
         node = LeafNode("a", "Click me!", {"href": "https://www.google.com"}).to_html()
         self.assertEqual(node, "<a href=\"https://www.google.com\">Click me!</a>")
 
-    def test_eq_none_tag(self):
-        node = LeafNode(None, "Click me!")
-        print(node)
-
 if __name__ == "__main__":
     unittest.main()
