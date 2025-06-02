@@ -1,7 +1,7 @@
 from leafnode import LeafNode
 from parentnode import ParentNode
 from textnode import TextNode, TextType, text_node_to_html_node
-from functions import split_nodes_delimiter, extract_markdown_images
+from functions import split_nodes_delimiter, extract_markdown_images, split_nodes_link, text_to_textnodes
 # from htmlnode import HTMLNode
 
 def main():
@@ -34,8 +34,18 @@ def main():
     # new_nodes = split_nodes_delimiter([node], "**", TextType.BOLD)
     # print("new_nodes:", new_nodes)
 
-    text = "This is text with a link [to boot dev](https://www.boot.dev) and [to youtube](https://www.youtube.com/@bootdotdev)"
-    print(extract_markdown_images(text))
-    print([("rick roll", "https://i.imgur.com/aKaOqIh.gif"), ("obi wan", "https://i.imgur.com/fJRm4Vk.jpeg")])
+    # text = "This is text with a link [to boot dev](https://www.boot.dev) and [to youtube](https://www.youtube.com/@bootdotdev)"
+    # print(extract_markdown_images(text))
+    # print([("rick roll", "https://i.imgur.com/aKaOqIh.gif"), ("obi wan", "https://i.imgur.com/fJRm4Vk.jpeg")])
+
+    # node = TextNode(
+    #     "No image here! Just some text...",
+    #     TextType.TEXT,
+    # )
+    # new_nodes = split_nodes_link([node])
+    # print(new_nodes)
+
+    some_text = "This is **bold_text** with an _italic_words_ and a `code block` and an ![obi wan image](https://i.imgur.com/fJRm4Vk.jpeg) and a [link](https://boot.dev)"
+    print(text_to_textnodes(some_text))
 
 main()
