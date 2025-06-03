@@ -1,7 +1,8 @@
 import unittest
 
-from textnode import TextType, TextNode
-from functions import split_nodes_delimiter, extract_markdown_images, extract_markdown_links, split_nodes_image, split_nodes_link
+from enums import TextType, BlockType
+from textnode import TextNode
+from functions import split_nodes_delimiter, extract_markdown_images, extract_markdown_links, split_nodes_image, split_nodes_link, markdown_to_blocks, block_to_block_type
 
 class TestFunctions(unittest.TestCase):
     def test_bold(self):
@@ -219,6 +220,170 @@ class TestFunctions(unittest.TestCase):
             ],
             new_nodes,
         )
+
+    def test_markdown_to_blocks(self):
+        md = """
+This is **bolded** paragraph
+
+This is another paragraph with _italic_ text and `code` here
+This is the same paragraph on a new line
+
+- This is a list
+- with items
+"""
+        blocks = markdown_to_blocks(md)
+        self.assertEqual(
+            blocks,
+            [
+                "This is **bolded** paragraph",
+                "This is another paragraph with _italic_ text and `code` here\nThis is the same paragraph on a new line",
+                "- This is a list\n- with items",
+            ],
+        )
+
+    def test_markdown_to_blocks__excessive_newlines__start(self):
+        md = """
+
+
+
+
+This is **bolded** paragraph
+
+This is another paragraph with _italic_ text and `code` here
+This is the same paragraph on a new line
+
+- This is a list
+- with items
+
+"""
+        blocks = markdown_to_blocks(md)
+        self.assertEqual(
+            blocks,
+            [
+                "This is **bolded** paragraph",
+                "This is another paragraph with _italic_ text and `code` here\nThis is the same paragraph on a new line",
+                "- This is a list\n- with items",
+            ],
+        )
+
+    def test_markdown_to_blocks__excessive_newlines__end(self):
+        md = """
+This is **bolded** paragraph
+
+This is another paragraph with _italic_ text and `code` here
+This is the same paragraph on a new line
+
+- This is a list
+- with items
+
+
+
+
+"""
+        blocks = markdown_to_blocks(md)
+        self.assertEqual(
+            blocks,
+            [
+                "This is **bolded** paragraph",
+                "This is another paragraph with _italic_ text and `code` here\nThis is the same paragraph on a new line",
+                "- This is a list\n- with items",
+            ],
+        )
+
+    def test_markdown_to_blocks__excessive_newlines__middle(self):
+        md = """
+This is **bolded** paragraph
+
+
+
+
+This is another paragraph with _italic_ text and `code` here
+This is the same paragraph on a new line
+
+
+
+
+
+
+- This is a list
+- with items
+
+"""
+        blocks = markdown_to_blocks(md)
+        self.assertEqual(
+            blocks,
+            [
+                "This is **bolded** paragraph",
+                "This is another paragraph with _italic_ text and `code` here\nThis is the same paragraph on a new line",
+                "- This is a list\n- with items",
+            ],
+        )
+
+    def test_block_to_block_type__heading(self):
+        heading1 = block_to_block_type("# Heading 1")
+        heading3 = block_to_block_type("### Heading 3")
+        heading6 = block_to_block_type("###### Heading 6")
+        paragraph = block_to_block_type("######### PARAGRAPH")
+
+        self.assertEqual(heading1, BlockType.HEADING)
+        self.assertEqual(heading3, BlockType.HEADING)
+        self.assertEqual(heading6, BlockType.HEADING)
+        self.assertEqual(paragraph, BlockType.PARAGRAPH)
+
+    def test_block_to_block_type__code(self):
+        code_block = "``` \n" \
+            "Block \n" \
+            "Block \n" \
+            "```"
+
+        self.assertEqual(block_to_block_type(code_block), BlockType.CODE)
+
+    def test_block_to_block_type__quote(self):
+        quote_block = "> This is \n" \
+        "> Some \n" \
+        "> Quote \n" \
+        "> Block \n"
+
+        self.assertEqual(block_to_block_type(quote_block), BlockType.QUOTE)
+
+    def test_block_to_block_type__unordered_list(self):
+        unordered_list = "- This is \n" \
+        "- An \n" \
+        "- Unordered List \n" \
+        "- Block \n"
+
+        self.assertEqual(block_to_block_type(unordered_list), BlockType.UNORDERED_LIST)
+
+    def test_block_to_block_type__ordered_list(self):
+        ordered_list = "1. This is \n" \
+        "2. An \n" \
+        "3. Ordered List \n" \
+        "4. Block \n"
+
+        self.assertEqual(block_to_block_type(ordered_list), BlockType.ORDERED_LIST)
+
+    def test_block_to_block_type__empty_block(self):
+        empty_block = ""
+
+        self.assertEqual(block_to_block_type(empty_block), BlockType.PARAGRAPH)
+
+    def test_block_to_block_type__extra_whitespace(self):
+        extra_whitespace = "> This is \n" \
+        "> Some \n" \
+        "  \n" \
+        "               \n" \
+        "> Quote \n" \
+        "> Block \n"
+
+        self.assertEqual(block_to_block_type(extra_whitespace), BlockType.PARAGRAPH)
+
+    def test_block_to_block_type__ordered_list_with_wrong_number(self):
+        ordered_list = "1. This is \n" \
+        "2. An \n" \
+        "4. Ordered List \n" \
+        "5. Block \n"
+
+        self.assertEqual(block_to_block_type(ordered_list), BlockType.PARAGRAPH)
 
 if __name__ == "__main__":
     unittest.main()

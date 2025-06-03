@@ -1,7 +1,7 @@
 from leafnode import LeafNode
 from parentnode import ParentNode
 from textnode import TextNode, TextType, text_node_to_html_node
-from functions import split_nodes_delimiter, extract_markdown_images, split_nodes_link, text_to_textnodes
+from functions import split_nodes_delimiter, extract_markdown_images, split_nodes_link, text_to_textnodes, markdown_to_blocks, block_to_block_type
 # from htmlnode import HTMLNode
 
 def main():
@@ -45,7 +45,43 @@ def main():
     # new_nodes = split_nodes_link([node])
     # print(new_nodes)
 
-    some_text = "This is **bold_text** with an _italic_words_ and a `code block` and an ![obi wan image](https://i.imgur.com/fJRm4Vk.jpeg) and a [link](https://boot.dev)"
-    print(text_to_textnodes(some_text))
+    # some_text = "This is **bold_text** with an _italic_words_ and a `code block` and an ![obi wan image](https://i.imgur.com/fJRm4Vk.jpeg) and a [link](https://boot.dev)"
+    # print(text_to_textnodes(some_text))
+
+#     md = """
+# This is **bolded** paragraph
+
+
+# This is another paragraph with _italic_ text and `code` here
+# This is the same paragraph on a new line
+
+
+
+# - This is a list
+# - with items
+
+# """
+#     markdown_to_blocks(md)
+    code_block = "```" \
+    "Block" \
+    "Block" \
+    "```"
+
+    quote_block = "> This is \n" \
+    "> Some \n" \
+    "> Quote \n" \
+    "> Block \n"
+
+    unordered_list = "- This is \n" \
+    "- An \n" \
+    "- Unordered List \n" \
+    "- Block \n"
+
+    ordered_list = "1. This is \n" \
+    "2. An \n" \
+    "3. Ordered List \n" \
+    "4. Block \n"
+
+    print(block_to_block_type(ordered_list))
 
 main()

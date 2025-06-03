@@ -1,6 +1,9 @@
+from ast import Break
+from numbers import Number
 import re
 
-from textnode import TextType, TextNode
+from enums import TextType, BlockType
+from textnode import TextNode
 
 def split_nodes_delimiter(old_nodes, delimiter, text_type):
     new_nodes = []
@@ -79,3 +82,62 @@ def text_to_textnodes(text):
     nodes = split_nodes_image(nodes)
     nodes = split_nodes_link(nodes)
     return nodes
+
+def markdown_to_blocks(markdown):
+    blocks = markdown.strip().split("\n\n")
+    markdown_blocks = []
+    for block in blocks:
+        strip_block = block.strip()
+        if strip_block != '':
+            markdown_blocks.append(strip_block)
+
+    return markdown_blocks
+
+def block_to_block_type(block):
+    block_patern = r"^#{1,6}\s\S.*"
+    if bool(re.match(block_patern, block)):
+        return BlockType.HEADING
+    
+    if block.startswith("```") and block.endswith("```"):
+        return BlockType.CODE
+    
+    splited_blocks = block.strip().split("\n")
+
+    is_quote = True
+    for line in splited_blocks:
+        if not line.startswith(">"):
+            is_quote = False
+            break
+
+    if is_quote:
+        return BlockType.QUOTE
+    
+    is_unordered_list = True
+    for line in splited_blocks:
+        if not line.startswith("- "):
+            is_unordered_list = False
+            break
+
+    if is_unordered_list:
+        return BlockType.UNORDERED_LIST
+    
+    is_ordered_list = True
+    ordered_list_patern = r"^[0-9]+\.\s"
+    for i in range(0, len(splited_blocks)):
+
+        regex_match = re.match(ordered_list_patern, splited_blocks[i])
+        if not regex_match:
+            is_ordered_list = False
+            break
+
+        index_number = f"{i + 1}. "
+        list_number = regex_match.group()
+
+        if index_number != list_number:
+            is_ordered_list = False
+            break
+
+    if is_ordered_list:
+        return BlockType.ORDERED_LIST
+
+    return BlockType.PARAGRAPH
