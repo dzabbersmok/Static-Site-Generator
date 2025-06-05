@@ -2,7 +2,7 @@ import unittest
 
 from enums import TextType, BlockType
 from textnode import TextNode
-from functions import split_nodes_delimiter, extract_markdown_images, extract_markdown_links, split_nodes_image, split_nodes_link, markdown_to_blocks, block_to_block_type
+from functions import split_nodes_delimiter, extract_markdown_images, extract_markdown_links, split_nodes_image, split_nodes_link, markdown_to_blocks, block_to_block_type, markdown_to_html_node
 
 class TestFunctions(unittest.TestCase):
     def test_bold(self):
@@ -384,6 +384,23 @@ This is the same paragraph on a new line
         "5. Block \n"
 
         self.assertEqual(block_to_block_type(ordered_list), BlockType.PARAGRAPH)
+
+    def test_paragraphs(self):
+        md = """
+This is **bolded** paragraph
+text in a p
+tag here
+
+This is another paragraph with _italic_ text and `code` here
+
+"""
+
+        node = markdown_to_html_node(md)
+        html = node.to_html()
+        self.assertEqual(
+            html,
+            "<div><p>This is <b>bolded</b> paragraph text in a p tag here</p><p>This is another paragraph with <i>italic</i> text and <code>code</code> here</p></div>",
+        )
 
 if __name__ == "__main__":
     unittest.main()

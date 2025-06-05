@@ -1,8 +1,10 @@
-from leafnode import LeafNode
-from parentnode import ParentNode
-from textnode import TextNode, TextType, text_node_to_html_node
-from functions import split_nodes_delimiter, extract_markdown_images, split_nodes_link, text_to_textnodes, markdown_to_blocks, block_to_block_type
+# from leafnode import LeafNode
+# from parentnode import ParentNode
+# from textnode import TextNode, TextType, text_node_to_html_node
+# from functions import split_nodes_delimiter, extract_markdown_images, split_nodes_link, text_to_textnodes, markdown_to_blocks, block_to_block_type, markdown_to_html_node
 # from htmlnode import HTMLNode
+
+from functions import markdown_to_html_node
 
 def main():
     # test_text_node = TextNode("This is some anchor text", TextType.LINK, "https://www.boot.dev").text_node_to_html_node()
@@ -62,26 +64,54 @@ def main():
 
 # """
 #     markdown_to_blocks(md)
-    code_block = "```" \
-    "Block" \
-    "Block" \
-    "```"
+    # code_block = "```" \
+    # "Block" \
+    # "Block" \
+    # "```"
 
-    quote_block = "> This is \n" \
-    "> Some \n" \
-    "> Quote \n" \
-    "> Block \n"
+    # quote_block = "> This is \n" \
+    # "> Some \n" \
+    # "> Quote \n" \
+    # "> Block \n"
 
-    unordered_list = "- This is \n" \
-    "- An \n" \
-    "- Unordered List \n" \
-    "- Block \n"
+    # unordered_list = "- This is \n" \
+    # "- An \n" \
+    # "- Unordered List \n" \
+    # "- Block \n"
 
-    ordered_list = "1. This is \n" \
-    "2. An \n" \
-    "3. Ordered List \n" \
-    "4. Block \n"
+    # ordered_list = "1. This is \n" \
+    # "2. An \n" \
+    # "3. Ordered List \n" \
+    # "4. Block \n"
+    md = """
+### Some much
+longer Header
+on three lines!
 
-    print(block_to_block_type(ordered_list))
+This is **bolded** paragraph
+text in a p
+tag here
+
+This is another paragraph with _italic_ text and `code` here
+
+```
+def hello_world():
+    print("Hello, world!")
+    return True
+``` 
+
+```
+This **should not** be _bold or italic_
+It should remain exactly as written
+```
+
+1. This is 
+2. An
+3. Ordered List
+4. Block
+
+"""
+    # print(markdown_to_html_node(md).to_html())
+    markdown_to_html_node(md)
 
 main()
