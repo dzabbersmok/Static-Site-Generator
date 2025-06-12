@@ -13,6 +13,7 @@ class ParentNode(HTMLNode):
             raise ValueError("All parent nodes must have child nodes!")
 
         for child in self.children:
-                children_string += child.to_html()
+                if child is not None:
+                    children_string += child.to_html()
 
         return f"<{self.tag}>{children_string}</{self.tag}>"

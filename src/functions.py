@@ -163,6 +163,12 @@ def block_to_html_node(block):
             return code_to_html_node(block)
         case BlockType.ORDERED_LIST:
             return olist_to_html_node(block)
+        case BlockType.UNORDERED_LIST:
+            return ulist_to_html_node(block)
+        case BlockType.QUOTE:
+            return quote_to_html_node(block)
+        
+    raise ValueError("invalid block type")
         
 def paragraph_to_html_node(block):
     lines = block.split("\n")
@@ -227,3 +233,24 @@ def heading_to_html_node(block):
     children = text_to_children(text)
 
     return ParentNode(f"h{heading_size}", children)
+
+def ulist_to_html_node(block):
+    items = block.split("\n")
+    html_items = []
+    for item in items:
+        text = item[2:]
+        children = text_to_children(text)
+        html_items.append(ParentNode("li", children))
+    return ParentNode("ul", html_items)
+
+
+def quote_to_html_node(block):
+    lines = block.split("\n")
+    new_lines = []
+    for line in lines:
+        if not line.startswith(">"):
+            raise ValueError("invalid quote block")
+        new_lines.append(line.lstrip(">").strip())
+    content = " ".join(new_lines)
+    children = text_to_children(content)
+    return ParentNode("blockquote", children)
