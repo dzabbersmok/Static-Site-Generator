@@ -24,12 +24,25 @@ def list_files(path):
         full_path = os.path.join(path, entry)
 
         if os.path.isdir(full_path):
-            create_directory(f"{full_path.replace("static", "public")}")
+            create_directory(f"{full_path.replace(path, "public")}")
             list_files(full_path)
 
         if os.path.isfile(full_path):
             shutil.copy(full_path, full_path.replace("static", "public"))
             return
+        
+def copy_files_recursive(source_dir_path, dest_dir_path):
+    if not os.path.exists(dest_dir_path):
+        os.mkdir(dest_dir_path)
+
+    for filename in os.listdir(source_dir_path):
+        from_path = os.path.join(source_dir_path, filename)
+        dest_path = os.path.join(dest_dir_path, filename)
+        print(f" * {from_path} -> {dest_path}")
+        if os.path.isfile(from_path):
+            shutil.copy(from_path, dest_path)
+        else:
+            copy_files_recursive(from_path, dest_path)
 
 def extract_title(markdown):
     lines = markdown.split("\n")
@@ -61,8 +74,10 @@ def generate_page(from_path, template_path, dest_path):
         file.write(output_html)
 
 def main():
-    create_directory("public")
-    list_files("static")
+    # create_directory("public")
+    # list_files("static")
+    copy_files_recursive("static", "public")
+    copy_files_recursive("content", "public")
 
     # test_md/simple_header.md
     # content/index.md
@@ -70,5 +85,10 @@ def main():
     template_path = "template.html" 
     dest_path = "public/index.html"
     generate_page(from_path, template_path, dest_path)
+
+    generate_page("content/blog/glorfindel/index.md", template_path, "public/blog/glorfindel.html")
+    generate_page("content/blog/tom/index.md", template_path, "public/blog/tom.html")
+    generate_page("content/blog/majesty/index.md", template_path, "public/blog/majesty.html")
+    generate_page("content/contact/index.md", template_path, "public/contact.html")
 
 main()
