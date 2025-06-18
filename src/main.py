@@ -93,6 +93,8 @@ def extract_title(markdown):
     
     return header
 
+print("test")
+
 def main():
     # create_directory("public")
     # list_files("static")
